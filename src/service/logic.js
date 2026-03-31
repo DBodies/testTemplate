@@ -1,9 +1,26 @@
 import createHttpError from "http-errors"
 import { carsCollection } from "../DB/dbSchema.js"
+import { calculatePaginationData } from "../utils/parsedNumbers.js"
+import { SORT_ORDER } from "../constants/constants.js"
 
-export const getAllCar = async () => {
-    const car = await carsCollection.find()
-    return car
+
+export const getAllCar = async ({
+    page = 1,
+    perPage = 10,
+    sortOrder = SORT_ORDER.ACS,
+    sortBy = "_id",
+}) => {
+    const limit = perPage
+    const skip = (page - 1 ) * perPage
+    const carQuery = carsCollection.find()
+    const carCount = await carsCollection.find().merge(carQuery).countDocuments()
+
+    const car = await carQuery.skip(skip).limit(limit).sort({[sortBy]:sortOrder}).exec()
+    const paginationData = calculatePaginationData(carCount, page, perPage)
+    return {
+        data: car,
+        ...paginationData
+    }
 }
 export const getCarById = async (carId) => {
     const car = await carsCollection.findById(carId)

@@ -1,8 +1,16 @@
 import createHttpError from "http-errors"
 import { createCar, deleteCar, getAllCar, getCarById, upsertedCar } from "../service/logic.js"
+import { SORT_ORDER } from "../constants/constants.js"
 
-export const getAllCarCOntrollers = async (req,res,next) => {
-    const result = await getAllCar()
+export const getAllCarCOntrollers = async (req,res) => {
+    const {page, perPage} = req.query
+    const {sortOrder, sortBy} = req.query
+    const result = await getAllCar({
+        page,
+        perPage,
+        sortOrder,
+        sortBy
+    })
     res.status(200).json({
         data: result
     })
