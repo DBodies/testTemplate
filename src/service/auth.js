@@ -1,5 +1,5 @@
 import createHttpError from "http-errors"
-import { userCollection } from "../DB/userCollection.js"
+import { SessionCollection, userCollection } from "../DB/userCollection.js"
 import bcrypt from 'bcrypt'
 import { randomBytes } from "crypto"
 import { FIFTEEN_MINUTES, ONE_DAY } from "../constants/constants.js"
@@ -39,11 +39,35 @@ export const loginUser = async (payload) => {
     const accessToken = randomBytes(30).toString('base64')
     const refreshToken = randomBytes(30).toString('base64')
 
-    return {
+    return await SessionCollection.create({
         userId: email._id,
         accessToken,
         refreshToken,
         accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
         refreshTokenValidUntil: new Date(Date.now() = ONE_DAY)
+    })
+}
+export const logoutUser = async (sessionId) => {
+await SessionCollection.deleteOne({_id: sessionId})
+}
+export const refreshSession = async({sessionId, refreshToken}) => {
+    const session = await SessionCollection.findOne({
+        _id: sessionId,
+        refreshToken})
+    if(!session) {
+        throw createHttpError(401, 'Session not found')
     }
+    const isRefreshTokenExpired = new Date() > new Date(session.refreshTokenValidUntil)
+    if(isRefreshTokenExpired) {
+        throw createHttpError(401, 'Token expired')
+    }
+    const newSession = createSession()
+    await SessionCollection.deleteOne({
+        _id: sessionId,
+        refreshToken
+    })
+    return await SessionCollection.create({
+        userId: session.userId,
+        ...newSession
+    })
 }

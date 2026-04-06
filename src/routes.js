@@ -13,7 +13,7 @@ import { createCarController,
     getAllCarCOntrollers, 
     getCarByIdController, 
     patchCarController } from "./controller/controller.js";
-import { registrationController } from "./controller/authController.js";
+import { loginUserController, refreshSessionController, registrationController } from "./controller/authController.js";
 
 export const router = Router()
 
@@ -32,3 +32,5 @@ router.delete('/Car/:carId', ctrlWrapper(deleteCarByIdController))
 router.post('/Car/', ctrlWrapper(createCarController))
 router.patch('/Car/:carId', ctrlWrapper(patchCarController))
 router.post('/auth/register', ctrlWrapper(registrationController))
+router.post('/auth/login', ctrlWrapper(loginUserController))
+router.post('/auth/refresh', ctrlWrapper(refreshSessionController))
