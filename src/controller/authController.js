@@ -9,17 +9,17 @@ export const registrationController = (req,res) => {
         data: user
     })
 }
-export const loginUserController = (req,res) => {
-    const session = req.body
+export const loginUserController = async (req,res) => {
+    const session = await loginUser(req.body);
     res.cookie("refreshToken", session.refreshToken, {
         httpOnly: true,
-        expiries: new Date(Date.now + ONE_DAY)
+        expires: new Date(Date.now() + ONE_DAY)
     }),
     res.cookie("sessionId", session._id, {
         httpOnly: true,
-        expiries: new Date(Date.now + ONE_DAY)
-    })
-    res.status(200).json({
+        expires: new Date(Date.now() + ONE_DAY)
+    });
+    res.status(201).json({
         message: "successfully logged in",
         data: {
             accessToken: session.accessToken
@@ -39,8 +39,8 @@ const setupSession = (res, session) => {
 };
 
 export const logoutUserController = async (req,res) => {
-    if(res.cookies.sessionId) {
-        await logoutUser(res.cookies.sessionId)
+    if(req.cookies.sessionId) {
+        await logoutUser(req.cookies.sessionId)
     }
     res.clearCookie("refreshToken")
     res.clearCookie("sessionId")
@@ -48,8 +48,8 @@ export const logoutUserController = async (req,res) => {
 }
 export const refreshSessionController = async (req,res) => {
     const session = await refreshSession({
-        sessionId: res.cookies.sessionId, 
-        refreshToken: res.cookies.refreshToken
+        sessionId: req.cookies.sessionId, 
+        refreshToken: req.cookies.refreshToken
     })
     setupSession(res, session)
     res.status(200).json({

@@ -8,7 +8,7 @@ import filters from "../utils/carFilters.js"
 export const getAllCar = async ({
     page = 1,
     perPage = 10,
-    sortOrder = SORT_ORDER.ACS,
+    sortOrder = SORT_ORDER.ASC,
     sortBy = "_id",
     filter = {}
 }) => {

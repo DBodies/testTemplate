@@ -1,4 +1,5 @@
 import {mongoose, model, Schema} from "mongoose";
+import { ROLES } from "../constants/constants.js";
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -13,13 +14,19 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true
-    }},
+    },
+     role: {
+    type: String,
+    enum: [ROLES.ADMIN, ROLES.USER, ROLES.GUEST],
+    default: ROLES.GUEST
+    }
+},
     {
         timestamps: true,
         versionKey:false
     }
 ) 
-userSchema.method.toJSON = function () {
+userSchema.methods.toJSON = function () {
     const obj = this.toObject()
     delete obj.password
     return obj
@@ -27,7 +34,7 @@ userSchema.method.toJSON = function () {
 export const userCollection = model('userTemplate', userSchema, 'userTemplate')
 
 const sessionSchema = new mongoose.Schema({
-    userId: {type: Schema.Types.ObjectId, ref: 'userCollection'},
+    userId: {type: Schema.Types.ObjectId, ref: 'userTemplate'},
     accessToken: {type: String, required: true},
     accessTokenValidUntil: {type: Date, required: true},
     refreshToken: {type: String, required: true},

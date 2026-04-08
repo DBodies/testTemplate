@@ -13,7 +13,8 @@ import { createCarController,
     getAllCarCOntrollers, 
     getCarByIdController, 
     patchCarController } from "./controller/controller.js";
-import { loginUserController, refreshSessionController, registrationController } from "./controller/authController.js";
+import { loginUserController, logoutUserController, refreshSessionController, registrationController } from "./controller/authController.js";
+import { authenticate } from "./middlewares/authenticate.js";
 
 export const router = Router()
 
@@ -26,11 +27,13 @@ router.get('/sixth', deleteDuplicateController)
 router.get('/seventh', theOldestUserController)
 router.get('/eighth', userIdController)
 // router.get('/ninth', )
-router.get('/Car', ctrlWrapper(getAllCarCOntrollers))
-router.get('/Car/:carId', ctrlWrapper(getCarByIdController))
-router.delete('/Car/:carId', ctrlWrapper(deleteCarByIdController))
-router.post('/Car/', ctrlWrapper(createCarController))
-router.patch('/Car/:carId', ctrlWrapper(patchCarController))
 router.post('/auth/register', ctrlWrapper(registrationController))
 router.post('/auth/login', ctrlWrapper(loginUserController))
 router.post('/auth/refresh', ctrlWrapper(refreshSessionController))
+router.post('/auth/logout', ctrlWrapper(logoutUserController))
+router.use(authenticate)
+router.get('/car', ctrlWrapper(getAllCarCOntrollers))
+router.get('/Car/:carId', ctrlWrapper(getCarByIdController))
+router.delete('/Car/:carId', ctrlWrapper(deleteCarByIdController))
+router.post('/Car', ctrlWrapper(createCarController))
+router.patch('/Car/:carId', ctrlWrapper(patchCarController))

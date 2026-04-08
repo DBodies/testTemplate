@@ -1,4 +1,7 @@
 import Joi from 'joi';
+import Joi from 'joi';
+import { isValidObjectId } from 'mongoose';
+
 export const usersSchema = Joi.array().items(
   Joi.object({
     id: Joi.number().required(),
@@ -7,9 +10,6 @@ export const usersSchema = Joi.array().items(
     age: Joi.number().required()
   })
 )
-import Joi from 'joi';
-import { isValidObjectId } from 'mongoose';
-
 const currentYear = new Date().getFullYear();
 
 const engineJoiSchema = Joi.object({
@@ -46,13 +46,13 @@ export const createCarSchema = Joi.object({
   color: Joi.string().trim().min(1).required(),
   features: Joi.array().items(Joi.string().trim().min(1)).default([]),
   in_stock: Joi.boolean().default(true),
-  photo: Joi.string(),
+  photo: Joi.string(), 
   parentId: Joi.string().custom((value, helper) => {
     if(value && !isValidObjectId(value)) {
-      return helper.message("Parent id should be a valid mongo id");
+      return helper.message('Parent id should be a valid mongo id')
     }
-    return true;
-  }) ,
+    return true
+  })
 }).options({ abortEarly: false, stripUnknown: true })
 ;
 

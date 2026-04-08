@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import {mongoose, Schema} from "mongoose";
 
 const engineSchema = new mongoose.Schema(
   {
@@ -98,8 +98,9 @@ const carSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    photo: {
-      type: String
+    parentId: {
+      type: Schema.Types.ObjectId,
+      ref: 'userTemplate'
     }
   },
   {
